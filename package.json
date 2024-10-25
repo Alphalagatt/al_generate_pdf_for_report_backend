@@ -1,0 +1,19 @@
+{
+  "name": "al_generate_pdf_for_report_backend",
+  "version": "1.0.0",
+  "description": "This is a server to create pdf documents",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alpha lagatt",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap": "^5.3.3",
+    "express": "^4.19.2",
+    "jquery": "^3.7.1",
+    "jsdom": "^24.1.1",
+    "nodemon": "^3.1.4",
+    "pdf-puppeteer": "^1.1.11"
+  }
+}
