@@ -9,6 +9,7 @@
     background-color: #C7E2FA; 
     padding: 5px;
     margin-top: 10px;
+    font-weight: bolder;
 }
 .heading-two{
     background-color: #0B5394; 
@@ -38,4 +39,15 @@
 .footer{
     border-top-style: solid;
     border-top-width: .5px;
+}
+.question-style{
+    color:red;
+    margin-top:20px;
+    margin-bottom:10px;
+    width:100%; 
+    border-top-style:solid;
+    border-bottom-style: solid;
+    border-width: 2px;
+    border-color: #0B5394;
+    padding: 10px;
 }

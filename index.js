@@ -21,15 +21,15 @@ app.use("/images", server.static(path.join("ReportImages")));
 
 
 //optimised code..
-app.get("/test-new-pdf/:id", async (req, res) => {
+app.get("/building-and-pest-pdf/:id", async (req, res) => {
   await data.emptyFolder(path.resolve(__dirname, "ReportImages/"));
   try {
     // Fetch token and inspection details concurrently
     const acc_token = await data.getToken();
-    const inspectionDetailsUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/blu_inspectiondetails(${req.params.id})?$expand=blu_inspectiondetail_Annotations($filter=isdocument eq true and mimetype eq 'image/jpeg'),blu_blu_inspectiondetail_blu_inspectioncatego($select=blu_name,blu_categoryhasbeenanswered;$filter=blu_categoryhasbeenanswered eq 1;$orderby=blu_id asc),owninguser`;
+    const inspectionDetailsUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/blu_inspectiondetails(${req.params.id})?$expand=blu_inspectiondetail_Annotations($filter=isdocument eq true and mimetype eq 'image/jpeg'),blu_blu_inspectiondetail_blu_inspectioncatego($select=blu_name,blu_categoryhasbeenanswered;$filter=blu_categoryhasbeenanswered eq 1;$orderby=blu_id asc),owninguser,blu_inspectiondetail_inspectionportalqa`;
     const inspectionDetails = await data.mydataasync(inspectionDetailsUrl, acc_token);
-    const buyerUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/contacts?$select=fullname&$filter=contactid eq ${inspectionDetails._blu_buyer_value}`;
-    const buyer = await data.mydataasync(buyerUrl, acc_token);
+    //const buyerUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/contacts?$select=fullname&$filter=contactid eq ${inspectionDetails._blu_buyer_value}`;
+    //const buyer = await data.mydataasync(buyerUrl, acc_token);
     //console.log(buyer);
     //console.log(inspectionDetails._blu_buyer_value);
     //console.log(path.resolve(__dirname,"ReportImages/"))
@@ -69,7 +69,7 @@ app.get("/test-new-pdf/:id", async (req, res) => {
       inspectionDetails: inspectionDetails,
       inspectionImages: inspectionDetails.blu_inspectiondetail_Annotations.map(image => image.annotationid),
       questionStructure: JSON.parse(JSON.stringify(cartegories)),
-      buyer: buyer.value[0].fullname
+      buyer: inspectionDetails.blu_inspectiondetail_inspectionportalqa.find(val=>val.blu_name == "Vendors Name").blu_answer
     };
 
 
@@ -117,15 +117,15 @@ app.get("/test-new-pdf/:id", async (req, res) => {
         document.getElementById("gen_photos").innerHTML += `<img style="height:30vh;width:30vw" src="http://localhost:5000/images/${photo}.webp" alt="." />`;
       });
 
-      document.getElementById("coverpage-image").src = `http://localhost:5000/images/${inspection.inspectionImages[0]}.webp`;
+      //document.getElementById("coverpage-image").src = `http://localhost:5000/images/${inspection.inspectionImages[0]}.webp`;
 
       // Table of Contents and Category Questions
       let sectionCounter = 5;
       inspection.questionStructure.forEach(category => {
         const catPage = document.createElement("div");
         catPage.style = "page-break-before:always";
-        if (category.cartegoryName == "Interior of Building - BYB" || category.cartegoryName == "Exterior of Building - BYB") {
-          catPage.innerHTML = `<p style="background-color: #0B5394; color: #EBF2F2; padding: 5px;" class="chapter-title">${category.cartegoryName.split("-")[0] + " - Summary"}</p>`;
+        if (category.cartegoryName == "Interior of Building - Summary" || category.cartegoryName == "Exterior of Building - Summary"  || category.cartegoryName == "Interior of Building - BYB"   || category.cartegoryName == "Exterior of Building - BYB"   ) {
+          catPage.innerHTML = `<p style="background-color: #0B5394; color: #EBF2F2; padding: 5px;" class="chapter-title">${category.cartegoryName.split('-')[0]+" - Summary"}</p>`;
           category.questions.map(question => {
             const que_section = document.createElement("div");
             //que_section.innerHTML += `<h5 style="color:red;">${question.question}</h5>`
@@ -151,26 +151,30 @@ app.get("/test-new-pdf/:id", async (req, res) => {
 
           category.questions.forEach(question => {
             const questionSection = document.createElement("div");
-            questionSection.innerHTML = `<h5 style="color:red;margin-top:10px;">${question.question}</h5>`;
+            questionSection.innerHTML = `<h5 class='question-style'>${question.question}</h5>`;
 
             question.answers.value.forEach(answer => {
-              questionSection.innerHTML += `${answer.blu_name.includes("SUB_Q:") ? "<p class='heading-three'>" + answer.blu_name + "</p>" : `<p><strong>${answer.blu_name} </strong><span style="font-style: italic;margin-left:15px">${answer.blu_supplementarytext || ''}</span></p>`}`;
+              questionSection.innerHTML += `${answer.blu_name.includes("SUB_Q:") ? "<p class='heading-three'>" + answer.blu_name + "</p>" : `<p><strong>${answer.blu_name} </strong>${answer.blu_supplementarytext== null?'':`<br/><span style="font-style: italic;margin-left:15px">${answer.blu_supplementarytext}</span>`}</p>`}`;
               if (answer.blu_name.includes("MAJOR")) major++;
               if (answer.blu_name.includes("MINOR")) minor++;
               if (answer.blu_name.includes("SAFETY")) safety++;
 
 
               /*populating questions to the summary page of the report*/
-              if (question.question == "32. Incidence of MAJOR Defects compared to similar buildings") {
+              //question 32 changes to question 54..
+              if (question.question == "32. Incidence of MAJOR Defects compared to similar buildings" || question.question == "Question 55. Incidence of MAJOR Defects compared to similar buildings") {
                 document.getElementById("summary-major-defects").innerHTML += `<span>${answer.blu_name}</span>-<span style='font-style: italic;margin-left:15px'>${answer.blu_supplementarytext == null ? "" : answer.blu_supplementarytext}</span>`;
-              } else if (question.question == "33. Incidence of MINOR Defects compared to similar buildings") {
+              }//question 33 changes to question 55.. 
+              else if (question.question == "33. Incidence of MINOR Defects compared to similar buildings" || question.question == "Question 56. Incidence of MINOR Defects compared to similar buildings") {
                 document.getElementById("summary-minor-defects").innerHTML += `<span>${answer.blu_name}</span>-<span style='font-style: italic;margin-left:15px'>${answer.blu_supplementarytext == null ? "" : answer.blu_supplementarytext}</span>`;
-              } else if (question.question == "47. SUMMARY") {
+              }//question 47 changes to question 51.. 
+              else if (question.question == "47. SUMMARY" || question.question == "Question 51. SUMMARY") {
                 document.getElementById("summary-pest-only").innerHTML += answer.blu_name.includes("SUB_Q:") ? `<p><b>${answer.blu_name.split(":")[1]}</b><br/>` : `${answer.blu_name}</p>`;
-              } else if (question.question == "35. Overall condition and conclusions") {
-                document.getElementById("building-recommendation").innerHTML += answer.blu_name.includes("SUB_Q:") ? "" : `<span>${answer.blu_name}</span>-<span style='font-style: italic;margin-left:15px'>${answer.blu_supplementarytext == null ? "" : answer.blu_supplementarytext}.</span>`;
-              } else if (question.question == "36. Overall Condition") {
-                document.getElementById("general-rating").innerHTML += `<span>${answer.blu_name}</span>-<span style='font-style: italic;margin-left:15px'>${answer.blu_supplementarytext == null ? "" : answer.blu_supplementarytext}.</span>`;
+              } 
+              else if (question.question == "35. Overall condition and conclusions" || question.question == "Question 58. Overall condition and conclusions") {
+                document.getElementById("building-recommendation").innerHTML += answer.blu_name.includes("SUB_Q:") ? "" : ` <span>${answer.blu_name}</span>${answer.blu_supplementarytext == null ? "" : "-<span style='font-style: italic;margin-left:15px'>"+answer.blu_supplementarytext+"</span>"}.`;
+              } else if (question.question == "36. Overall Condition" || question.question == "Question 59. Overall Condition") {
+                document.getElementById("general-rating").innerHTML += `<span>${answer.blu_name}</span>`;
               }
 
 
@@ -179,6 +183,7 @@ app.get("/test-new-pdf/:id", async (req, res) => {
               /*Explaination section..*/
 
               answer.blu_blu_inspectionanswer_blu_inspectionexplan.forEach(expl => {
+                expl.blu_name == "-"?'':questionSection.innerHTML+=`<p>${expl.blu_name}</p>`; 
                 questionSection.innerHTML += `<ul>`
                 expl.blu_blu_inspectionexplanation_blu_inspectiono.forEach(opt => {
                   questionSection.innerHTML += `<li style='font-style: italic; color: #0B5394;margin-left:15px;'>
@@ -273,10 +278,10 @@ app.get("/:id", async (req, res) => {
   try {
     // Fetch token and inspection details concurrently
     const acc_token = await data.getToken();
-    const inspectionDetailsUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/blu_inspectiondetails(${req.params.id})?$expand=blu_inspectiondetail_Annotations($filter=isdocument eq true and mimetype eq 'image/jpeg'),blu_blu_inspectiondetail_blu_inspectioncatego($select=blu_name,blu_categoryhasbeenanswered;$filter=blu_categoryhasbeenanswered eq 1;$orderby=blu_id asc),owninguser`;
+    const inspectionDetailsUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/blu_inspectiondetails(${req.params.id})?$expand=blu_inspectiondetail_Annotations($filter=isdocument eq true and mimetype eq 'image/jpeg'),blu_blu_inspectiondetail_blu_inspectioncatego($select=blu_name,blu_categoryhasbeenanswered;$filter=blu_categoryhasbeenanswered eq 1;$orderby=blu_id asc),owninguser,blu_inspectiondetail_inspectionportalqa`;
     const inspectionDetails = await data.mydataasync(inspectionDetailsUrl, acc_token);
-    const buyerUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/contacts?$select=fullname&$filter=contactid eq ${inspectionDetails._blu_buyer_value}`;
-    const buyer = await data.mydataasync(buyerUrl, acc_token);
+    //const buyerUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/contacts?$select=fullname&$filter=contactid eq ${inspectionDetails._blu_buyer_value}`;
+    //const buyer = await data.mydataasync(buyerUrl, acc_token);
     //console.log(buyer);
     //console.log(inspectionDetails._blu_buyer_value);
     //console.log(path.resolve(__dirname,"ReportImages/"))
@@ -316,7 +321,7 @@ app.get("/:id", async (req, res) => {
       inspectionDetails: inspectionDetails,
       inspectionImages: inspectionDetails.blu_inspectiondetail_Annotations.map(image => image.annotationid),
       questionStructure: JSON.parse(JSON.stringify(cartegories)),
-      buyer: buyer.value[0].fullname
+      buyer: inspectionDetails.blu_inspectiondetail_inspectionportalqa.find(val=>val.blu_name == "Vendors Name").blu_answer
     };
 
 
@@ -326,7 +331,7 @@ app.get("/:id", async (req, res) => {
     res.status(200).json(inspection);
   } catch (err) {
     res.status(500).send(err);
-    //console.log(err);
+    console.log(err);
   }
 
 });
