@@ -117,7 +117,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
         document.getElementById("gen_photos").innerHTML += `<img style="height:30vh;width:30vw" src="http://localhost:5000/images/${photo}.webp" alt="." />`;
       });
 
-      //document.getElementById("coverpage-image").src = `http://localhost:5000/images/${inspection.inspectionImages[0]}.webp`;
+      document.getElementById("coverpage-image").src = `http://localhost:5000/images/${inspection.inspectionImages[0]}.webp`;
 
       // Table of Contents and Category Questions
       let sectionCounter = 5;
