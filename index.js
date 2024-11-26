@@ -168,7 +168,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
               else if (question.question == "33. Incidence of MINOR Defects compared to similar buildings" || question.question == "Question 56. Incidence of MINOR Defects compared to similar buildings") {
                 document.getElementById("summary-minor-defects").innerHTML += `<span>${answer.blu_name}</span>-<span style='font-style: italic;margin-left:15px'>${answer.blu_supplementarytext == null ? "" : answer.blu_supplementarytext}</span>`;
               }//question 47 changes to question 51.. 
-              else if (question.question == "47. SUMMARY" || question.question == "Question 51. SUMMARY") {
+              else if (question.question == "47. SUMMARY" || question.question == "Question 55. SUMMARY" || question.question == "Question 51. SUMMARY"  ) {
                 document.getElementById("summary-pest-only").innerHTML += answer.blu_name.includes("SUB_Q:") ? `<p><b>${answer.blu_name.split(":")[1]}</b><br/>` : `${answer.blu_name}</p>`;
               } 
               else if (question.question == "35. Overall condition and conclusions" || question.question == "Question 58. Overall condition and conclusions") {
