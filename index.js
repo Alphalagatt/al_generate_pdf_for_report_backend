@@ -1,6 +1,6 @@
 const server = require("express");
 const app = server();
-const port = 5000;
+const port = process.env.PORT || 5000;
 const puppeteer = require("puppeteer");
 const path = require("path");
 const fs = require("node:fs");
@@ -348,5 +348,5 @@ app.get("/",(req,res)=>{
 
 
 app.listen(port, () => {
-  console.log("listening in localhost:5000/")
+  console.log("listening in localhost:"+port+"/")
 })
