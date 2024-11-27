@@ -34,6 +34,7 @@ const getToken = function(){
   try{
   cca.acquireTokenByClientCredential(tokenRequest).then((response)=>{
     acc_token = response;
+    //console.log(response);
   }).catch((err)=>{
     console.error(err);
   })
@@ -89,7 +90,7 @@ const mydataasync = function (odata_url,accessToken){
     return new Promise(resolve=>{
     setTimeout(function(){
          resolve(dataval);
-     },5000);
+     },10000);
     
     });
   }
@@ -135,7 +136,7 @@ async function emptyFolder(folderPath) {
 
 
 
-
+//getToken();
 
 
 
