@@ -336,6 +336,9 @@ app.get("/:id", async (req, res) => {
 
 });
 
+app.get("/",(req,res)=>{
+  res.send("Welcome to TPI - server!!");
+})
 
 
 
