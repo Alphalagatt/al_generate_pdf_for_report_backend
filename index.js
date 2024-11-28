@@ -252,7 +252,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
           </div>
           <p style='font-size: 10px; text-align:right; margin-right:20px;'>Page <span span style='font-size:larger;' class='pageNumber'></span> of <span span style='font-size:larger;' class='totalPages'></span><br/></p>
         </div></div>`,
-      zoomFactor: 0.75,
+      zoomFactor: 0.6,
       waitUntil: "load",
       margin: {
         top: "40px",
