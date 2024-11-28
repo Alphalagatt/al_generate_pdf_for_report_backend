@@ -256,7 +256,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
       waitUntil: "load",
       margin: {
         top: "40px",
-        bottom: "80px",
+        bottom: "100px",
         left: "20px",
         right: "20px"
       },
