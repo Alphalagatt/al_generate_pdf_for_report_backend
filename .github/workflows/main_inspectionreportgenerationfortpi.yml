@@ -36,7 +36,7 @@ jobs:
       # 5. Set Puppeteer environment to use Chromium
       - name: Configure Puppeyteer
         env:
-          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
         run: echo "Using system-installed Chromium"
 
 
