@@ -82,6 +82,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
     const greenTick = fs.readFileSync(path.join(__dirname, "Resources/green-tick.png"), { encoding: "base64" });
     //const imgUrl = "http://localhost:5000/images/2beb2461-229b-ef11-8a69-6045bde6f702.webp";
     const browser = await puppeteer.launch({
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
       headless: true,  // Set to true for headless mode
       args: [
         '--no-sandbox',
