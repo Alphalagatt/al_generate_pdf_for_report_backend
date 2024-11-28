@@ -80,7 +80,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
     const myHTML = fs.readFileSync(path.join(__dirname, "ReportTemplates/pre_purchase_building_pest.html"), "utf8");
     const logo = fs.readFileSync(path.join(__dirname, "Resources/tpilogo.jpg"), { encoding: "base64" });
     const greenTick = fs.readFileSync(path.join(__dirname, "Resources/green-tick.png"), { encoding: "base64" });
-    //const imgUrl = "${process.env.MAIN_URL}/images/2beb2461-229b-ef11-8a69-6045bde6f702.webp";
+    //const imgUrl = "http://localhost:${port}/images/2beb2461-229b-ef11-8a69-6045bde6f702.webp";
     const browser = await puppeteer.launch({
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
       headless: true,  // Set to true for headless mode
@@ -115,10 +115,10 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
       document.getElementById("cover-property-date-of-inspection").innerHTML = new Date(inspection.inspectionDetails.blu_starttime).toLocaleDateString('en-AU');
       // Insert general photos
       inspection.inspectionImages.forEach(photo => {
-        document.getElementById("gen_photos").innerHTML += `<img style="height:30vh;width:30vw" src="${process.env.MAIN_URL}/images/${photo}.webp" alt="." />`;
+        document.getElementById("gen_photos").innerHTML += `<img style="height:30vh;width:30vw" src="http://localhost:${port}/images/${photo}.webp" alt="." />`;
       });
 
-      document.getElementById("coverpage-image").src = `${process.env.MAIN_URL}/images/${inspection.inspectionImages[0]}.webp`;
+      document.getElementById("coverpage-image").src = `http://localhost:${port}/images/${inspection.inspectionImages[0]}.webp`;
 
       // Table of Contents and Category Questions
       let sectionCounter = 5;
@@ -135,7 +135,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
             if (question.question_images.length > 0) {
               que_section.innerHTML += `<div style="padding-left:100px; width: 80%;">`;
               question.question_images.forEach(photos => {
-                que_section.innerHTML += `<img style="height:35vh;width:50vw; margin-left:200px;" src='${process.env.MAIN_URL}/images/${photos}.webp' alt='.' />`
+                que_section.innerHTML += `<img style="height:35vh;width:50vw; margin-left:200px;" src='http://localhost:${port}/images/${photos}.webp' alt='.' />`
               })
               que_section.innerHTML += `</div>`;
             }
@@ -203,7 +203,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
             if (question.question_images.length > 0) {
               questionSection.innerHTML += `<div style="display: grid;gap: 15px;grid-template-columns: auto auto auto; width: 100%;">`;
               question.question_images.forEach(photo => {
-                questionSection.innerHTML += `<img style="height:30vh;width:30vw; margin:10px;" src="${process.env.MAIN_URL}/images/${photo}.webp" alt="." />`;
+                questionSection.innerHTML += `<img style="height:30vh;width:30vw; margin:10px;" src="http://localhost:${port}/images/${photo}.webp" alt="." />`;
               });
               questionSection.innerHTML += `</div>`;
             }
