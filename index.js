@@ -101,7 +101,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
     console.log("starting evaluate..")
 
     // Start populating content in Puppeteer page
-    await page.evaluate((inspection, greenTick) => {
+    await page.evaluate((inspection, greenTick,port) => {
       console.log(inspection);
       let major = 0, minor = 0, safety = 0;
 
@@ -231,7 +231,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
       updateDefectStatus("minor", minor > 0);
       updateDefectStatus("safety", safety > 0);
 
-    }, inspection, greenTick, { timeout: 600000 });
+    }, inspection, greenTick, port, { timeout: 600000 });
 
 
 
