@@ -1,6 +1,6 @@
 const server = require("express");
 const app = server();
-const port = process.env.PORT? process.env.PORT : 5000;
+const port = process.env.PORT ? process.env.PORT : 5000;
 const puppeteer = require("puppeteer");
 const path = require("path");
 const fs = require("node:fs");
@@ -33,7 +33,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
     //console.log(buyer);
     //console.log(inspectionDetails._blu_buyer_value);
     //console.log(path.resolve(__dirname,"ReportImages/"))
-    
+
 
     const cartegories = await Promise.all(inspectionDetails.blu_blu_inspectiondetail_blu_inspectioncatego.map(async (category) => {
       const nestedQuestionsUrl = `https://tpi.api.crm6.dynamics.com/api/data/v9.2/blu_inspectionquestions?$select=blu_name,blu_questionhasbeenanswered,blu_id&$filter=_blu_categoryid_value eq ${category.blu_inspectioncategoryid} and blu_questionhasbeenanswered eq true&$orderby=blu_questionorder asc&$expand=blu_inspectionquestion_Annotations($filter=isdocument eq true and mimetype eq 'image/jpeg')`;
@@ -69,7 +69,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
       inspectionDetails: inspectionDetails,
       inspectionImages: inspectionDetails.blu_inspectiondetail_Annotations.map(image => image.annotationid),
       questionStructure: JSON.parse(JSON.stringify(cartegories)),
-      buyer: inspectionDetails.blu_inspectiondetail_inspectionportalqa.find(val=>val.blu_name == "Vendors Name").blu_answer
+      buyer: inspectionDetails.blu_inspectiondetail_inspectionportalqa.find(val => val.blu_name == "Vendors Name").blu_answer
     };
 
 
@@ -80,9 +80,9 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
     const myHTML = fs.readFileSync(path.join(__dirname, "ReportTemplates/pre_purchase_building_pest.html"), "utf8");
     const logo = fs.readFileSync(path.join(__dirname, "Resources/tpilogo.jpg"), { encoding: "base64" });
     const greenTick = fs.readFileSync(path.join(__dirname, "Resources/green-tick.png"), { encoding: "base64" });
-    //const imgUrl = "http://localhost:5000/images/2beb2461-229b-ef11-8a69-6045bde6f702.webp";
+    //const imgUrl = "${process.env.MAIN_URL}/images/2beb2461-229b-ef11-8a69-6045bde6f702.webp";
     const browser = await puppeteer.launch({
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
       headless: true,  // Set to true for headless mode
       args: [
         '--no-sandbox',
@@ -115,18 +115,18 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
       document.getElementById("cover-property-date-of-inspection").innerHTML = new Date(inspection.inspectionDetails.blu_starttime).toLocaleDateString('en-AU');
       // Insert general photos
       inspection.inspectionImages.forEach(photo => {
-        document.getElementById("gen_photos").innerHTML += `<img style="height:30vh;width:30vw" src="http://localhost:5000/images/${photo}.webp" alt="." />`;
+        document.getElementById("gen_photos").innerHTML += `<img style="height:30vh;width:30vw" src="${process.env.MAIN_URL}/images/${photo}.webp" alt="." />`;
       });
 
-      document.getElementById("coverpage-image").src = `http://localhost:5000/images/${inspection.inspectionImages[0]}.webp`;
+      document.getElementById("coverpage-image").src = `${process.env.MAIN_URL}/images/${inspection.inspectionImages[0]}.webp`;
 
       // Table of Contents and Category Questions
       let sectionCounter = 5;
       inspection.questionStructure.forEach(category => {
         const catPage = document.createElement("div");
         catPage.style = "page-break-before:always";
-        if (category.cartegoryName == "Interior of Building - Summary" || category.cartegoryName == "Exterior of Building - Summary"  || category.cartegoryName == "Interior of Building - BYB"   || category.cartegoryName == "Exterior of Building - BYB"   ) {
-          catPage.innerHTML = `<p style="background-color: #0B5394; color: #EBF2F2; padding: 5px;" class="chapter-title">${category.cartegoryName.split('-')[0]+" - Summary"}</p>`;
+        if (category.cartegoryName == "Interior of Building - Summary" || category.cartegoryName == "Exterior of Building - Summary" || category.cartegoryName == "Interior of Building - BYB" || category.cartegoryName == "Exterior of Building - BYB") {
+          catPage.innerHTML = `<p style="background-color: #0B5394; color: #EBF2F2; padding: 5px;" class="chapter-title">${category.cartegoryName.split('-')[0] + " - Summary"}</p>`;
           category.questions.map(question => {
             const que_section = document.createElement("div");
             //que_section.innerHTML += `<h5 style="color:red;">${question.question}</h5>`
@@ -135,7 +135,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
             if (question.question_images.length > 0) {
               que_section.innerHTML += `<div style="padding-left:100px; width: 80%;">`;
               question.question_images.forEach(photos => {
-                que_section.innerHTML += `<img style="height:35vh;width:50vw; margin-left:200px;" src='http://localhost:5000/images/${photos}.webp' alt='.' />`
+                que_section.innerHTML += `<img style="height:35vh;width:50vw; margin-left:200px;" src='${process.env.MAIN_URL}/images/${photos}.webp' alt='.' />`
               })
               que_section.innerHTML += `</div>`;
             }
@@ -155,7 +155,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
             questionSection.innerHTML = `<h5 class='question-style'>${question.question}</h5>`;
 
             question.answers.value.forEach(answer => {
-              questionSection.innerHTML += `${answer.blu_name.includes("SUB_Q:") ? "<p class='heading-three'>" + answer.blu_name + "</p>" : `<p><strong>${answer.blu_name} </strong>${answer.blu_supplementarytext== null?'':`<br/><span style="font-style: italic;margin-left:15px">${answer.blu_supplementarytext}</span>`}</p>`}`;
+              questionSection.innerHTML += `${answer.blu_name.includes("SUB_Q:") ? "<p class='heading-three'>" + answer.blu_name + "</p>" : `<p><strong>${answer.blu_name} </strong>${answer.blu_supplementarytext == null ? '' : `<br/><span style="font-style: italic;margin-left:15px">${answer.blu_supplementarytext}</span>`}</p>`}`;
               if (answer.blu_name.includes("MAJOR")) major++;
               if (answer.blu_name.includes("MINOR")) minor++;
               if (answer.blu_name.includes("SAFETY")) safety++;
@@ -169,11 +169,11 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
               else if (question.question == "33. Incidence of MINOR Defects compared to similar buildings" || question.question == "Question 56. Incidence of MINOR Defects compared to similar buildings") {
                 document.getElementById("summary-minor-defects").innerHTML += `<span>${answer.blu_name}</span>-<span style='font-style: italic;margin-left:15px'>${answer.blu_supplementarytext == null ? "" : answer.blu_supplementarytext}</span>`;
               }//question 47 changes to question 51.. 
-              else if (question.question == "47. SUMMARY" || question.question == "Question 55. SUMMARY" || question.question == "Question 51. SUMMARY"  ) {
+              else if (question.question == "47. SUMMARY" || question.question == "Question 55. SUMMARY" || question.question == "Question 51. SUMMARY") {
                 document.getElementById("summary-pest-only").innerHTML += answer.blu_name.includes("SUB_Q:") ? `<p><b>${answer.blu_name.split(":")[1]}</b><br/>` : `${answer.blu_name}</p>`;
-              } 
+              }
               else if (question.question == "35. Overall condition and conclusions" || question.question == "Question 58. Overall condition and conclusions") {
-                document.getElementById("building-recommendation").innerHTML += answer.blu_name.includes("SUB_Q:") ? "" : ` <span>${answer.blu_name}</span>${answer.blu_supplementarytext == null ? "" : "-<span style='font-style: italic;margin-left:15px'>"+answer.blu_supplementarytext+"</span>"}.`;
+                document.getElementById("building-recommendation").innerHTML += answer.blu_name.includes("SUB_Q:") ? "" : ` <span>${answer.blu_name}</span>${answer.blu_supplementarytext == null ? "" : "-<span style='font-style: italic;margin-left:15px'>" + answer.blu_supplementarytext + "</span>"}.`;
               } else if (question.question == "36. Overall Condition" || question.question == "Question 59. Overall Condition") {
                 document.getElementById("general-rating").innerHTML += `<span>${answer.blu_name}</span>`;
               }
@@ -184,7 +184,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
               /*Explaination section..*/
 
               answer.blu_blu_inspectionanswer_blu_inspectionexplan.forEach(expl => {
-                expl.blu_name == "-"?'':questionSection.innerHTML+=`<p>${expl.blu_name}</p>`; 
+                expl.blu_name == "-" ? '' : questionSection.innerHTML += `<p>${expl.blu_name}</p>`;
                 questionSection.innerHTML += `<ul>`
                 expl.blu_blu_inspectionexplanation_blu_inspectiono.forEach(opt => {
                   questionSection.innerHTML += `<li style='font-style: italic; color: #0B5394;margin-left:15px;'>
@@ -195,7 +195,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
               });
 
               /*End - Explaination section..*/
-              
+
             });
 
             /*Question images section..*/
@@ -203,7 +203,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
             if (question.question_images.length > 0) {
               questionSection.innerHTML += `<div style="display: grid;gap: 15px;grid-template-columns: auto auto auto; width: 100%;">`;
               question.question_images.forEach(photo => {
-                questionSection.innerHTML += `<img style="height:30vh;width:30vw; margin:10px;" src="http://localhost:5000/images/${photo}.webp" alt="." />`;
+                questionSection.innerHTML += `<img style="height:30vh;width:30vw; margin:10px;" src="${process.env.MAIN_URL}/images/${photo}.webp" alt="." />`;
               });
               questionSection.innerHTML += `</div>`;
             }
@@ -259,7 +259,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
         left: "20px",
         right: "20px"
       },
-      timeout:600000
+      timeout: 600000
     })
 
     // Send PDF to client
@@ -297,9 +297,9 @@ app.get("/:id", async (req, res) => {
         const answers = await data.mydataasync(inspectionAnswersUrl, acc_token);
         //console.log(answers);
         await data.Convert_to_Webp(question.blu_inspectionquestion_Annotations);
-        await Promise.all(answers.value.map(async (answ)=>{
+        await Promise.all(answers.value.map(async (answ) => {
           await data.Convert_to_Webp(answ.blu_inspectionanswer_Annotations);
-          await answ.blu_inspectionanswer_Annotations.map(img=>img.annotationid);
+          await answ.blu_inspectionanswer_Annotations.map(img => img.annotationid);
         }))
         return {
           question: question.blu_name,
@@ -322,7 +322,7 @@ app.get("/:id", async (req, res) => {
       inspectionDetails: inspectionDetails,
       inspectionImages: inspectionDetails.blu_inspectiondetail_Annotations.map(image => image.annotationid),
       questionStructure: JSON.parse(JSON.stringify(cartegories)),
-      buyer: inspectionDetails.blu_inspectiondetail_inspectionportalqa.find(val=>val.blu_name == "Vendors Name").blu_answer
+      buyer: inspectionDetails.blu_inspectiondetail_inspectionportalqa.find(val => val.blu_name == "Vendors Name").blu_answer
     };
 
 
@@ -337,7 +337,7 @@ app.get("/:id", async (req, res) => {
 
 });
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
   res.send("Welcome to TPI - server!!");
 })
 
@@ -349,5 +349,5 @@ app.get("/",(req,res)=>{
 
 
 app.listen(port, () => {
-  console.log("listening in localhost:"+port+"/")
+  console.log("listening in localhost:" + port + "/")
 })
