@@ -89,7 +89,8 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
         '--disable-setuid-sandbox',
         '--disable-gpu',
         '--disable-software-rasterizer',
-        '--disable-dev-shm-usage'
+        '--disable-dev-shm-usage',
+        '--force-device-scale-factor=1'
       ],
       defaultViewport: null,  // Allow Puppeteer to use full screen,
       timeout: 120000
