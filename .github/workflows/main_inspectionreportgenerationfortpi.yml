@@ -27,17 +27,17 @@ jobs:
           npm run build --if-present
       
 
-    # 4. Install Chromium
-    - name: Install Chromium
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y chromium-browser
+      # 4. Install Chromium
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
 
-    # 5. Set Puppeteer environment to use Chromium
-    - name: Configure Puppeteer
-      env:
-        PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
-      run: echo "Using system-installed Chromium"
+      # 5. Set Puppeteer environment to use Chromium
+      - name: Configure Puppeteer
+        env:
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium-browser
+        run: echo "Using system-installed Chromium"
 
 
 
