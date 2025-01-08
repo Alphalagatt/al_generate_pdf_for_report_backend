@@ -164,18 +164,18 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
 
               /*populating questions to the summary page of the report*/
               //question 32 changes to question 54..
-              if (question.question == "32. Incidence of MAJOR Defects compared to similar buildings" || question.question == "Question 55. Incidence of MAJOR Defects compared to similar buildings") {
+              if (question.question == "32. Incidence of MAJOR Defects compared to similar buildings" || question.question == "Question 47. Incidence of MAJOR Defects compared to similar buildings") {
                 document.getElementById("summary-major-defects").innerHTML += `<span>${answer.blu_name}</span>-<span style='font-style: italic;margin-left:15px'>${answer.blu_supplementarytext == null ? "" : answer.blu_supplementarytext}</span>`;
               }//question 33 changes to question 55.. 
-              else if (question.question == "33. Incidence of MINOR Defects compared to similar buildings" || question.question == "Question 56. Incidence of MINOR Defects compared to similar buildings") {
+              else if (question.question == "33. Incidence of MINOR Defects compared to similar buildings" || question.question == "Question 48. Incidence of MINOR Defects compared to similar buildings") {
                 document.getElementById("summary-minor-defects").innerHTML += `<span>${answer.blu_name}</span>-<span style='font-style: italic;margin-left:15px'>${answer.blu_supplementarytext == null ? "" : answer.blu_supplementarytext}</span>`;
               }//question 47 changes to question 51.. 
               else if (question.question == "47. SUMMARY" || question.question == "Question 55. SUMMARY" || question.question == "Question 51. SUMMARY") {
                 document.getElementById("summary-pest-only").innerHTML += answer.blu_name.includes("SUB_Q:") ? `<p><b>${answer.blu_name.split(":")[1]}</b><br/>` : `${answer.blu_name}</p>`;
               }
-              else if (question.question == "35. Overall condition and conclusions" || question.question == "Question 58. Overall condition and conclusions") {
+              else if (question.question == "35. Overall condition and conclusions" || question.question == "Question 50. Overall condition and conclusions") {
                 document.getElementById("building-recommendation").innerHTML += answer.blu_name.includes("SUB_Q:") ? "" : ` <span>${answer.blu_name}</span>${answer.blu_supplementarytext == null ? "" : "-<span style='font-style: italic;margin-left:15px'>" + answer.blu_supplementarytext + "</span>"}.`;
-              } else if (question.question == "36. Overall Condition" || question.question == "Question 59. Overall Condition") {
+              } else if (question.question == "36. Overall Condition" || question.question == "Question 51. Overall Condition") {
                 document.getElementById("general-rating").innerHTML += `<span>${answer.blu_name}</span>`;
               }
 
