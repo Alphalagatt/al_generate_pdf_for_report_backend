@@ -180,6 +180,7 @@ app.get("/building-and-pest-pdf/:id", async (req, res) => {
               }
 
 
+              
               /*END - populating questions to the summary page of the report*/
 
               /*Explaination section..*/
